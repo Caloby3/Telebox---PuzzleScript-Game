@@ -1,0 +1,187 @@
+title Telebox
+author Caleb Young
+homepage www.puzzlescript.net
+
+realtime_interval 0.25
+key_repeat_interval 10
+norepeat_action
+
+========
+OBJECTS
+========
+
+Background
+White Gray
+00000
+00000
+00000
+00000
+00000
+
+
+TeleBox
+Orange
+00000
+0...0
+0...0
+0...0
+00000
+
+Box
+Brown
+00000
+0...0
+0...0
+0...0
+00000
+
+Wall
+lightgray
+00000
+00000
+00000
+00000
+00000
+
+Hole
+black
+
+PlayerStart
+Blue
+.....
+.000.
+.000.
+.000.
+.....
+
+Playerwait
+Blue
+.....
+.000.
+.000.
+.000.
+.....
+
+BoxStart
+Blue Orange
+11111
+10001
+10001
+10001
+11111
+
+PlayerFall
+Blue
+.....
+.....
+..0..
+.....
+.....
+
+UpPush
+transparent
+
+DownPush
+transparent
+
+LeftPush
+transparent
+
+RightPush
+transparent
+
+Exit
+green
+
+
+=======
+LEGEND
+=======
+
+Player = PlayerStart or PlayerWait or BoxStart or PlayerFall
+Push = UpPush or RightPush or DownPush or LeftPush
+
+. = Background
+# = Wall
+P = PlayerStart
+T = TeleBox
+H = Hole
+E = Exit
+B = Box
+
+=======
+SOUNDS
+=======
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Exit
+
+Push
+Hole
+Player, Wall, TeleBox, Box
+
+======
+RULES
+======
+
+(starting Box)
+[ action PlayerStart ] -> [ Boxstart ]
+[ action BoxStart] -> [ PlayerStart ]
+
+(Throwing Box)
+right [ > boxstart | no Wall ] -> [ PlayerWait | RightPush action TeleBox]
+left [ > boxstart | no Wall ] -> [ PlayerWait | LeftPush action TeleBox]
+up [ > boxstart | no Wall ] -> [ PlayerWait | UpPush action TeleBox]
+down [ > boxstart | no Wall ] -> [ PlayerWait | DownPush action TeleBox]
+
+right [stationary Playerwait] [ RightPush stationary TeleBox | no Wall ] -> [stationary Playerwait] [  | RightPush action TeleBox ]
+left [stationary Playerwait] [ LeftPush stationary TeleBox | no Wall ] -> [stationary Playerwait] [  | LeftPush action TeleBox ]
+up [stationary Playerwait] [ UpPush stationary TeleBox | no Wall ] -> [stationary Playerwait] [  | UpPush action TeleBox ]
+down [stationary Playerwait] [ DownPush stationary TeleBox | no Wall ] -> [stationary Playerwait] [  | DownPush action TeleBox ]
+
+(Swap when action button is hit)
+[action PlayerWait | ... | TeleBox] -> [ | ... | PlayerStart]
+[moving PlayerWait ] -> [ stationary Playerwait]
+
+(Cant walk on hole)
+[ > Player | Hole] -> cancel
+[ Player Hole ] -> restart
+
+(Box interaction)
+
+
+[ > player | Box ] -> [> player | > Box]
+
+==============
+WINCONDITIONS
+==============
+
+all player on Exit
+
+=======
+LEVELS
+=======
+
+#########
+#p...hh.#
+#....hh.#
+#....hh.#
+#hhhhhhh#
+#hhhhhhh#
+#hhhhhhh#
+#hhhhhhe#
+#########
+
+#########
+#p......#
+#.......#
+#.......#
+#...B...#
+#.......#
+#.......#
+#.......#
+#########
